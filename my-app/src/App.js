@@ -16,35 +16,41 @@ import {
 export class App extends Component {
   constructor(props) {
     super(props);
-    // this.getItems();
+    this.getItems();
 
     this.state = {
       item: [],
       searchArray: [],
       newInfoModal: false,
       columns: [
-        {
-          dataField: "albumId",
-          text: "Album ID",
-          sort: true,
-        },
-        {
-          dataField: "id",
-          text: "ID",
-          sort: true,
-        },
+        // {
+        //   dataField: "albumId",
+        //   text: "Album ID",
+        //   sort: true,
+        // },
+        // {
+        //   dataField: "id",
+        //   text: "ID",
+        //   sort: true,
+        // },
         {
           dataField: "title",
           text: "Title",
           sort: true,
           filter: textFilter(),
         },
-        // {
-        //   dataField: "url",
-        //   text: "Image",
-        //   sort: true,
-        //   filter: textFilter(),
-        // },
+        {
+          dataField: "url",
+          text: "Image",
+          sort: true,
+          filter: textFilter(),
+        },
+        {
+          dataField: "thumbnailUrl",
+          text: "thumbnailUrl",
+          sort: true,
+          filter: textFilter(),
+        },
         {
           text: "Format Button",
           formatter: this.formatButton,
@@ -70,48 +76,74 @@ export class App extends Component {
       );
     }
   };
-  // getItems = async () => {
-  //   try {
-  //     let data = await axios({
-  //       method: "get",
-  //       url: "https://jsonplaceholder.typicode.com/photos",
-  //     }).then(({ data }) => data);
-  //     console.log(data);
-  //     this.setState({
-  //       item: data,
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-  componentDidMount() {
-    axios
-      .get("https://jsonplaceholder.typicode.com/photos")
-      .then((res) => {
-        this.setState({
-          item: res.data,
-        });
-
-        console.log(res.data);
-        this.searchArray = res.data;
-      })
-      .catch((err) => {
-        console.log(err);
+  getItems = async () => {
+    try {
+      let data = await axios({
+        method: "get",
+        url: "https://jsonplaceholder.typicode.com/photos",
+      }).then(({ data }) => data);
+      console.log(data);
+      this.setState({
+        item: data,
       });
-  }
-  //for search
+      this.searchArray = data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  // componentDidMount() {
+  //   axios
+  //     .get("https://jsonplaceholder.typicode.com/photos")
+  //     .then((res) => {
+  //       this.setState({
+  //         item: res.data,
+  //       });
+
+  //       console.log(res.data);
+  //       this.searchArray = res.data;
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }
+  //for search multi filter
   onChangeHandler(e) {
     console.log(e.target.value);
-    let newArray = this.searchArray.filter((d) => {
-      console.log(d);
-      let searchValue = d.title.toLowerCase();
-
-      return searchValue.indexOf(e.target.value) !== -1;
+    let newArray = this.searchArray.filter((val) => {
+      // console.log(val);
+      let searchValue = val.title.toLowerCase();
+      let searchValueURL = val.url.toLowerCase();
+      let searchValuethumbnailUrl = val.thumbnailUrl.toLowerCase();
+      if (this.searchArray === "") {
+        return val;
+      } else if (searchValue || searchValueURL || searchValuethumbnailUrl) {
+        return (
+          searchValue.indexOf(e.target.value) !== -1 ||
+          searchValueURL.indexOf(e.target.value) !== -1 ||
+          searchValuethumbnailUrl.indexOf(e.target.value) !== -1
+        );
+      }
+      return "";
     });
     this.setState({
       item: newArray,
     });
   }
+
+  //akta filter
+
+  // onChangeHandler(e) {
+  //   console.log(e.target.value);
+  //   let newArray = this.searchArray.filter((d) => {
+  //     console.log(d);
+  //     let searchValue = d.title.toLowerCase();
+
+  //     return searchValue.indexOf(e.target.value) !== -1;
+  //   });
+  //   this.setState({
+  //     item: newArray,
+  //   });
+  // }
 
   // for modal
   toggleInfo() {
